@@ -1,0 +1,73 @@
+.post {
+  border: 1px solid #ccc; /* Adds a border */
+  padding: 10px; /* Adds padding inside the post */
+  margin-bottom: 20px; /* Adds vertical space between posts */
+  height: 300px; /* Sets a fixed height for each post */
+  overflow: scroll; /* Ensures content fits within the fixed height */
+}
+
+.text-post {
+  overflow-y: auto; /* Adds scroll for text content if it overflows */
+}
+
+.post img {
+  max-height: 70%;
+  max-width: 100%;
+  display: block; /* Removes bottom margin/whitespace under the image */
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Loading Spinner Styles */
+.loader {
+  border: 5px solid #f3f3f3; /* Light grey */
+  border-top: 5px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

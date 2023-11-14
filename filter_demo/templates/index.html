@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      // When the user clicks on <span> (x), close the modal
+      function closeModal() {
+        var modal = document.getElementById("myModal");
+        modal.style.display = "none";
+      }
+
+      // Process Post Function
+      function processPost(form, button) {
+        event.preventDefault();
+
+        // Change button to show loading spinner
+        button.innerHTML = '<div class="loader"></div>';
+        button.disabled = true;
+
+        var formData = new FormData(form);
+        fetch("{{ url_for('process_post') }}", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Processing complete, revert button back to normal
+            button.innerHTML = "Check";
+            button.disabled = false;
+
+            // Display the processed result in the modal
+            var modal = document.getElementById("myModal");
+            var span = document.getElementsByClassName("close")[0];
+            var modalText = document.getElementById("modal-text");
+
+            modalText.innerText = data.result;
+            modal.style.display = "block";
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+              modal.style.display = "none";
+            };
+
+            // Read out the processed result
+            var speech = new SpeechSynthesisUtterance(data.result);
+            window.speechSynthesis.speak(speech);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            button.innerHTML = "Check";
+            button.disabled = false;
+          });
+      }
+    </script>
+
+    <meta charset="UTF-8" />
+    <title>New Feed</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <h1>New Feed</h1>
+    {% for post in posts %}
+    <form
+      action="{{ url_for('process_post') }}"
+      method="post"
+      onsubmit="processPost(this, this.querySelector('button'));"
+    >
+      <div class="post">
+        <h2>Post {{ loop.index }}</h2>
+        {% if post.type == 'image' %}
+        <img src="{{ post.src }}" alt="Image Post" />
+        {% elif post.type == 'text' %}
+        <div class="text-post">{{ post.content }}</div>
+        {% endif %}
+        <input
+          type="hidden"
+          name="filename"
+          value="{{ post.src if post.type == 'image' else post.content }}"
+        />
+        <button type="submit">Check</button>
+      </div>
+    </form>
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modal-text"></p>
+      </div>
+    </div>
+
+    {% endfor %}
+  </body>
+</html>
