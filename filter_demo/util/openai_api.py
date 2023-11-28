@@ -21,7 +21,7 @@ def query_gpt(prompt):
             messages=[
                 {
                     "role": "user",
-                    "content": f"Is this content safe for autistic patients? only answer yes or no with 1 sentence reason: {prompt}",
+                    "content": f"Translate or display the content in English. Next, indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
                 }
             ],
             max_tokens=150,
@@ -33,9 +33,9 @@ def query_gpt(prompt):
         return None
 
 
-def query_gpt_image(image_url):
+def query_gpt_image_prompt(image_url, prompt=""):
     try:
-        image_url = f"{public_ip_address}{image_url}"
+        image_url = f"{public_ip_address}new_feed/{image_url}"
         print(image_url)
         response = client.chat.completions.create(
             model="gpt-4-vision-preview",  # Ensure this is the correct model for your use case
@@ -45,7 +45,7 @@ def query_gpt_image(image_url):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Is this content safe for autistic patients? only answer yes or no with 1 sentence reason",
+                            "text": f"Translate or display the content in English. Next, indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
                         },
                         {
                             "type": "image_url",

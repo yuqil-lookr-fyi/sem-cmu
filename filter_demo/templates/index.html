@@ -69,16 +69,24 @@
     >
       <div class="post">
         <h2>Post {{ loop.index }}</h2>
-        {% if post.type == 'image' %}
-        <img src="{{ post.src }}" alt="Image Post" />
-        {% elif post.type == 'text' %}
-        <div class="text-post">{{ post.content }}</div>
+        <!-- Include hidden input for text content -->
+        {% if post.content %}
+        <div class="text-post">{{ post.content | safe }}</div>
+        <input type="hidden" name="text_content" value="{{ post.content }}" />
         {% endif %}
+        <!-- Display related images for the post -->
+        {% if post.images %}
+        <h2>Related Images</h2>
+        {% for image in post.images %}
+        <img src="{{ image }}" alt="Related Image" />
+        <!-- Include hidden input for each image filename -->
         <input
           type="hidden"
-          name="filename"
-          value="{{ post.src if post.type == 'image' else post.content }}"
+          name="image_filename"
+          value="{{ image.split('/')[-1] }}"
         />
+        {% endfor %} {% endif %}
+        <!-- Include Check button for each post -->
         <button type="submit">Check</button>
       </div>
     </form>

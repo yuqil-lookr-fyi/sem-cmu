@@ -1,42 +1,66 @@
 import os
 import shutil
 import random
+import requests
+from mastodon import Mastodon
+from dotenv import load_dotenv
+
+load_dotenv()  # This loads the environment variables from .env file
+client_key = os.getenv("MASTODON_CLIENT_KEY")
+client_secret = os.getenv("MASTODON_CLIENT_SECRET_KEY")
+access_token = os.getenv("MASTODON_ACCESS_TOKEN")
+
+
+def fetch_random_post(client_key, client_secret, access_token):
+    # Initialize Mastodon client
+    mastodon = Mastodon(
+        client_id=client_key,
+        client_secret=client_secret,
+        access_token=access_token,
+        api_base_url="https://mastodon.social",  # Replace with your Mastodon instance URL
+    )
+
+    # Fetch public posts
+    public_posts = mastodon.timeline_public(limit=2)
+
+    # Select and return a random post
+    if public_posts:
+        return random.choice(public_posts)
+    else:
+        print("No posts found.")
+        return None
 
 
 def create_new_feed():
-    base_path = "."  # Replace with the path to your repo
-    safe_path = os.path.join(base_path, "autistic_safe")
-    unsafe_path = os.path.join(base_path, "autistic_unsafe")
-    new_feed_path = os.path.join(base_path, "new_feed")
+    # Fetch 8 random posts
+    random_posts = []
+    for _ in range(8):
+        post = fetch_random_post(client_key, client_secret, access_token)
+        if post:
+            random_posts.append(post)
 
-    # Delete new_feed directory if it exists
+    # Create a directory for the new feed
+    new_feed_path = "./new_feed"
     if os.path.exists(new_feed_path):
         shutil.rmtree(new_feed_path)
-
-    # Create new_feed directory
     os.makedirs(new_feed_path)
 
-    # Gather all posts with directory prefix to ensure uniqueness
-    all_posts = [
-        ("safe", p) for p in os.listdir(safe_path) if not p.endswith("_reason.txt")
-    ] + [
-        ("unsafe", p) for p in os.listdir(unsafe_path) if not p.endswith("_reason.txt")
-    ]
+    # Save posts and images
+    for i, post in enumerate(random_posts):
+        # Save text content
+        text_filename = os.path.join(new_feed_path, f"post_{i}.txt")
+        with open(text_filename, "w", encoding="utf-8") as file:
+            file.write(post["content"])
 
-    # Randomly pick 7 posts
-    selected_posts = random.sample(all_posts, 7)
-
-    # Copy and rename the selected posts
-    for i, (dir_prefix, post) in enumerate(selected_posts):
-        src_path = os.path.join(
-            safe_path if dir_prefix == "safe" else unsafe_path, post
-        )
-
-        # Determine file extension
-        _, ext = os.path.splitext(post)
-        new_filename = f"post_{i}{ext}"
-        dest_path = os.path.join(new_feed_path, new_filename)
-
-        shutil.copyfile(src_path, dest_path)
-
-    print("New feed created with 7 posts.")
+        # Save images
+        if "media_attachments" in post:
+            for j, media in enumerate(post["media_attachments"]):
+                if media["type"] == "image":
+                    image_url = media["url"]
+                    image_response = requests.get(image_url)
+                    if image_response.status_code == 200:
+                        image_filename = os.path.join(
+                            new_feed_path, f"image_{i}_{j}.jpeg"
+                        )
+                        with open(image_filename, "wb") as img_file:
+                            img_file.write(image_response.content)
