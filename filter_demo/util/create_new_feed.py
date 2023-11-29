@@ -31,13 +31,20 @@ def fetch_random_post(client_key, client_secret, access_token):
         return None
 
 
-def create_new_feed():
-    # Fetch 8 random posts
+def create_new_feed(download_images_only=False, num_posts=8):
+    # Fetch specified number of random posts
     random_posts = []
-    for _ in range(8):
+    while len(random_posts) < num_posts:
         post = fetch_random_post(client_key, client_secret, access_token)
         if post:
-            random_posts.append(post)
+            # Check if post has image media when download_images_only is True
+            if download_images_only:
+                if "media_attachments" in post and any(
+                    media["type"] == "image" for media in post["media_attachments"]
+                ):
+                    random_posts.append(post)
+            else:
+                random_posts.append(post)
 
     # Create a directory for the new feed
     new_feed_path = "./new_feed"
@@ -47,7 +54,7 @@ def create_new_feed():
 
     # Save posts and images
     for i, post in enumerate(random_posts):
-        # Save text content
+        # Save text content only if download_images_only is False
         text_filename = os.path.join(new_feed_path, f"post_{i}.txt")
         with open(text_filename, "w", encoding="utf-8") as file:
             file.write(post["content"])

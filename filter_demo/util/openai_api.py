@@ -21,7 +21,7 @@ def query_gpt(prompt):
             messages=[
                 {
                     "role": "user",
-                    "content": f"Translate or display the content in English. Next, indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
+                    "content": f"Indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
                 }
             ],
             max_tokens=150,
@@ -45,7 +45,7 @@ def query_gpt_image_prompt(image_url, prompt=""):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"Translate or display the content in English. Next, indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
+                            "text": f"Indicate with 'Yes' or 'No' whether the text and any accompanying image (if present) are suitable for autistic patients who are native speakers of the text's language (e.g., Indian patients for Hindi text). Use the format: [Yes/No]: [Reason] [Translation]. \n Content: {prompt}",
                         },
                         {
                             "type": "image_url",

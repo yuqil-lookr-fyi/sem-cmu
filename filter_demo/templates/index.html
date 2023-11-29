@@ -2,10 +2,16 @@
 <html lang="en">
   <head>
     <script>
-      // When the user clicks on <span> (x), close the modal
+      var currentSpeech = null; // Global variable to hold the current speech synthesis instance
+
+      // When the user clicks on <span> (x), close the modal and stop speech
       function closeModal() {
         var modal = document.getElementById("myModal");
         modal.style.display = "none";
+        if (currentSpeech) {
+          window.speechSynthesis.cancel(); // Stop the speech synthesis
+          currentSpeech = null;
+        }
       }
 
       // Process Post Function
@@ -36,13 +42,11 @@
             modal.style.display = "block";
 
             // When the user clicks on <span> (x), close the modal
-            span.onclick = function () {
-              modal.style.display = "none";
-            };
+            span.onclick = closeModal;
 
             // Read out the processed result
-            var speech = new SpeechSynthesisUtterance(data.result);
-            window.speechSynthesis.speak(speech);
+            currentSpeech = new SpeechSynthesisUtterance(data.result);
+            window.speechSynthesis.speak(currentSpeech);
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -75,9 +79,7 @@
         <input type="hidden" name="text_content" value="{{ post.content }}" />
         {% endif %}
         <!-- Display related images for the post -->
-        {% if post.images %}
-        <h2>Related Images</h2>
-        {% for image in post.images %}
+        {% if post.images %} {% for image in post.images %}
         <img src="{{ image }}" alt="Related Image" />
         <!-- Include hidden input for each image filename -->
         <input

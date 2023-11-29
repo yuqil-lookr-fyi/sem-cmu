@@ -13,6 +13,7 @@ import os
 # Import the function to create new feed
 from util.create_new_feed import create_new_feed
 from util.openai_api import query_gpt, query_gpt_image_prompt
+from util.appwrite_api import create_post, read_caption_from_file, upload_image
 
 app = Flask(__name__)
 
@@ -20,7 +21,13 @@ app = Flask(__name__)
 NEW_FEED_PATH = "./new_feed"
 
 # Generate the new feed
-# create_new_feed()
+# create_new_feed(True, 8)
+
+
+def create_post_helper(img_path, caption):
+    image_url, image_id = upload_image(img_path)
+    post = create_post(image_url, image_id, caption)
+    return post
 
 
 def read_text_file(file_path):
@@ -65,7 +72,11 @@ def process_post():
 
         # Process as image with text prompt if available
         gpt_response = query_gpt_image_prompt(image_filename, prompt)
+        if gpt_response.startswith("Yes"):
+            post = create_post_helper(file_path, text_content)
+            return jsonify({"result": gpt_response, "post": post})
     else:
+        # in demo, we only show images with text so this is not used
         print("Text detected")
         gpt_response = query_gpt(text_content)
 

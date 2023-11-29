@@ -2,7 +2,7 @@
   border: 1px solid #ccc; /* Adds a border */
   padding: 10px; /* Adds padding inside the post */
   margin-bottom: 20px; /* Adds vertical space between posts */
-  height: 300px; /* Sets a fixed height for each post */
+  height: 500px; /* Sets a fixed height for each post */
   overflow: scroll; /* Ensures content fits within the fixed height */
 }
 
